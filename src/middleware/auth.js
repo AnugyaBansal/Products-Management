@@ -1,32 +1,78 @@
 const jwt = require("jsonwebtoken");
+const { isValidObjectId } = require("../util/validator");
 
-const userAuth = async (req, res, next) => {
+// Authentication.
+const authentication = async function (req, res, next) {
   try {
-    const token = req.header('Authorization', 'Bearer ')
+    const token = req.header("Authorization");
+    // const token = req.header("Authorization", "Bearer ");
 
     if (!token) {
-      return res.status(403).send({
-          status: false,
-          message: `Missing authentication token in request`,
-        });
+      return res.status(400).send({
+        status: false,
+        message: `Missing authentication token in request`,
+      });
     }
+    let splitToken = token.split(" ");
 
-    let splitToken = token.split(' ')
-    const decodeToken = jwt.verify(splitToken[1], "Secret-Key")  
-    if (!decodeToken) {
-      return res.status(403).send({
-          status: false,
-          message: `Invalid authentication token in request`,
-        });
-    }
+    jwt.verify(
+      splitToken[1],
+      "This-is-a-Secret-Key-for-Login(!@#$%^&*(</>)))",
+      (error, data) => {
+        if (error) {
+          return res.status(401).send({
+            status: false,
+            message: error.message,
+          });
+        }
+        req.userId = data.userId; // Set userId in Request for use in Authorization.
+        next();
+      }
+    );
 
-    req.userId = decodeToken.userId
+    // const decodeToken = jwt.verify(
+    //   splitToken[1],
+    //   "This-is-a-Secret-Key-for-Login(!@#$%^&*(</>)))"
+    // );
 
-    next();
-  } catch (err) {
-    console.log(err);
-    res.status(500).send({ msg: err.message });
+    // if (!decodeToken) {
+    //   return res.status(401).send({
+    //     status: false,
+    //     message: `Invalid authentication token in request`,
+    //   });
+    // }
+    // req.userId = decodeToken.userId; // Set userId in Request for use in Authorization.
+    // next();
+  } catch (error) {
+    return res.status(500).send({ status: false, message: error.message });
   }
 };
 
-module.exports.userAuth = userAuth;
+//Authorization.
+const authorization = async function (req, res, next) {
+  try {
+    console.log("Authorization.");
+
+    const userIdParams = req.params.userId.trim();
+
+    if (!isValidObjectId(userIdParams)) {
+      return res.status(400).send({
+        status: false,
+        message: "UserID in Params Not a valid Mongoose ObjectID.",
+      });
+    }
+
+    if (req.userId !== userIdParams) {
+      return res.status(403).send({
+        status: false,
+        message: "Unauthorised Access: You can't update other User's Profile.",
+      });
+    }
+
+    next();
+  } catch (error) {
+    return res.status(500).send({ status: false, message: error.message });
+  }
+};
+
+module.exports = { authentication, authorization };
