@@ -9,6 +9,7 @@ const {
   login,
 } = require("../controllers/userController");
 
+<<<<<<< HEAD
 //Product Functions.
 const {
   createProducts,
@@ -27,6 +28,21 @@ const { authentication, authorization } = require("../middleware/auth");
 router.post("/register", createUser);
 
 router.post("/login", login);
+=======
+// FEATURE I - User 
+// User API
+router.post("/register",userController.createUser)
+router.post("/login",userController.login)
+router.get("/user/:userId/profile", auth.userAuth, userController.getUserById);
+router.put("/user/:userId/profile",auth.userAuth,userController.UpdateUser)
+
+// FEATURE II - Product 
+// Product API
+router.post("/products",productController.createProducts)
+router.get("/products", productController.getProductByFilter);
+router.put("/products/:productId", productController.updateProductById);
+router.delete("/products/:productId", productController.deleteProductById);
+>>>>>>> e2760c1798b32bca92757feda7d3b37a192c9ef1
 
 router.get("/user/:userId/profile", authentication, getUserById);
 
