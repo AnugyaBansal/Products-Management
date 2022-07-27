@@ -5,11 +5,11 @@ const cartSchema = new mongoose.Schema(
   {
     userId: { type: ObjectId, ref: "User", required: true, unique: true },
 
-    items: [
+    items: [      //Array of Object.
       {
         productId: { type: ObjectId, ref: "Product", required: true },
-        quantity: { type: Number, required: true },
-        _id: false,
+        quantity: { type: Number, required: true },   // min <1>  !!!!
+        // _id: false,    // _id Needed ??
       },
     ],
 

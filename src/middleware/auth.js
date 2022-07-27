@@ -29,20 +29,6 @@ const authentication = async function (req, res, next) {
         next();
       }
     );
-
-    // const decodeToken = jwt.verify(
-    //   splitToken[1],
-    //   "This-is-a-Secret-Key-for-Login(!@#$%^&*(</>)))"
-    // );
-
-    // if (!decodeToken) {
-    //   return res.status(401).send({
-    //     status: false,
-    //     message: `Invalid authentication token in request`,
-    //   });
-    // }
-    // req.userId = decodeToken.userId; // Set userId in Request for use in Authorization.
-    // next();
   } catch (error) {
     return res.status(500).send({ status: false, message: error.message });
   }
@@ -65,7 +51,8 @@ const authorization = async function (req, res, next) {
     if (req.userId !== userIdParams) {
       return res.status(403).send({
         status: false,
-        message: "Unauthorised Access: You can't update other User's Profile.",
+        message:
+          "Unauthorised Access: You can't fetch/update other User's Data (Profile, Cart etc.).",
       });
     }
 

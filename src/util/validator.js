@@ -29,7 +29,7 @@ const isValidPassword = function (password) {
 };
 
 const isValidStreet = function (street) {
-  return /^[a-zA-Z0-9\/\-\,\.\(\) ]*$/.test(street);    //Change message in controller.!!!!
+  return /^[a-zA-Z0-9\/\-\,\.\(\) ]*$/.test(street); //Change message in controller.!!!!
 };
 
 const isValidCity = function (city) {
@@ -38,6 +38,26 @@ const isValidCity = function (city) {
 
 const isValidPincode = function (pincode) {
   return /^[1-9]\d{5}$/.test(pincode);
+};
+
+let titleValidator = function (name) {
+  let regx = /^[a-zA-z0-9$!]+([\s][a-zA-Z0-9$!\,]+)*$/;
+  return regx.test(name);
+};
+
+let numberValidation = function validatePrice(price) {
+  var re = /^[0-9]$/;
+  return re.test(price);
+};
+
+let isValidPrice = /^\d{0,8}(\.\d{1,4})?$/;
+
+let isValidEnum = (enm) => {
+  var uniqueEnums = [...new Set(enm)];
+  const enumList = ["S", "XS", "M", "X", "L", "XXL", "XL"];
+  return (
+    enm.length === uniqueEnums.length && enm.every((e) => enumList.includes(e))
+  );
 };
 
 module.exports = {
@@ -50,4 +70,8 @@ module.exports = {
   isValidStreet,
   isValidPincode,
   isValidCity,
+  titleValidator,
+  numberValidation,
+  isValidEnum,
+  isValidPrice,
 };

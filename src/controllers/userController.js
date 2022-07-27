@@ -310,7 +310,7 @@ const login = async function (req, res) {
       { userId: findUser._id },
       "This-is-a-Secret-Key-for-Login(!@#$%^&*(</>)))",
       {
-        expiresIn: "24h",   // 24 Hours.
+        expiresIn: "24h", // 24 Hours.
       }
     );
 
