@@ -47,7 +47,8 @@ const addToCart = async (req, res) => {
     // Cart ID. -> NOT MAndatory????????????
     let findCart;
 
-    if (cartId) {
+    // if (cartId) {
+    if (typeof cartId !== "undefined") {
       if (!isValid(cartId)) {
         return res
           .status(400)
