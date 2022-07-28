@@ -6,15 +6,13 @@ const {
   isValid,
   isValidRequestBody,
   isValidObjectId,
-} = require("../util/validator"); // isValidObjectId,
+} = require("../util/validator");
 
 //-------------------------------------------------------------------------
 //              1. API - POST /users/:userId/cart (Add to cart)
 //-------------------------------------------------------------------------
 
 const addToCart = async (req, res) => {
-  //Authentication Required.  !!!!
-  // 302. Make sure the userId in params and in JWT token match.
   try {
     console.log("Add To Cart");
 
@@ -27,13 +25,8 @@ const addToCart = async (req, res) => {
       });
     }
 
-    // !!!!!!!!!!- Make sure the userId in params and in JWT token match.
-
     //- Make sure the user exist.
     const findUser = await userModel.findById(userIdParams);
-
-    console.log("User: " + findUser); //------
-
     if (!findUser) {
       return res.status(404).send({
         status: false,
@@ -60,7 +53,6 @@ const addToCart = async (req, res) => {
           .status(400)
           .send({ status: false, message: "<cartId> is required." });
       }
-
       if (!isValidObjectId(cartId)) {
         return res.status(400).send({
           status: false,
@@ -77,22 +69,19 @@ const addToCart = async (req, res) => {
         });
       }
     }
-    // IF cartId NOT in REquest-Body.
+    // IF cartId NOT in REquest-Body.   ~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!!!!!!!!
     else {
       findCart = await cartModel.findOne({ userId: userIdParams });
       if (findCart) {
         cartId = findCart._id;
       }
       if (!findCart) {
-        console.log("LINE - 98");
-        // return res.status(404).send({
-        //   status: false,
-        //   message: `CART having userId: <${userIdParams}> NOT Found in Database.`,
-        // });
+        return res.status(404).send({
+          status: false,
+          message: `CART having userId: <${userIdParams}> NOT Found in Database.`,
+        });
       }
     }
-
-    console.log("CART: " + findCart); //------
 
     // Product ID.
     if (!isValid(productId)) {
@@ -107,8 +96,11 @@ const addToCart = async (req, res) => {
         message: `productId: <${productId}> NOT a Valid Mongoose Object ID.`,
       });
     }
-    //- Make sure the product(s) are valid and not deleted.??????
-    const findProduct = await productModel.findById(productId);
+    //- Make sure the product(s) are valid and not deleted.!!!!!!!!!!!!!!
+    const findProduct = await productModel.findOne({
+      _id: productId,
+      isDeleted: false,
+    });
     if (!findProduct) {
       return res.status(404).send({
         status: false,
@@ -123,13 +115,11 @@ const addToCart = async (req, res) => {
         (x) => x.productId.toString() === productId
       );
 
-      console.log(isProductAlready);
-      console.log(typeof isProductAlready);
-
       if (isProductAlready.length > 0) {
         // Update Product in Cart.
         const addProduct = await cartModel.findOneAndUpdate(
           {
+            userId: userIdParams,
             "items.productId": productId,
           },
           {
@@ -144,15 +134,12 @@ const addToCart = async (req, res) => {
 
         return res.status(200).send({
           status: true,
-          message: "Added product in cart successfully.",
+          message: "Added product (Increased Quantity) in cart successfully.",
           data: addProduct,
         });
       }
 
       // ELSE. -> Create Product in Cart.
-      console.log(cartId);
-      console.log(typeof cartId);
-
       const createProduct = await cartModel.findOneAndUpdate(
         { _id: cartId },
         {
@@ -162,24 +149,21 @@ const addToCart = async (req, res) => {
         { new: true }
       );
 
+      // 201 ???????????!!!!!!!!!!!!!!!!!!!!!!!!!
       return res.status(200).send({
-        // 201 ???????????
         status: true,
-        message: "Created product in cart successfully.",
+        message: "Added product (Created) in cart successfully.",
         data: createProduct,
       });
     }
 
     //- Create a cart for the user if it does not exist. Else add product<(s)> in cart.
-
-    console.log("create Cart");
     const cart = {
       userId: userIdParams,
       items: [{ productId: productId, quantity: 1 }],
       totalItems: 1,
       totalPrice: findProduct.price,
     };
-
     const createCart = await cartModel.create(cart);
 
     //- Get product(s) details in response body. !!!!!!!!!!!
@@ -198,7 +182,7 @@ const addToCart = async (req, res) => {
 //    (Remove product / Reduce a product's quantity from the cart)
 //-------------------------------------------------------------------------
 
-//   - Updates a cart by either decrementing the quantity of a product by 1 or deleting a product from the cart.
+//- Updates a cart by either decrementing the quantity of a product by 1 or deleting a product from the cart.
 
 const updateCart = async (req, res) => {
   // - Get product(s) details in response body.
@@ -221,7 +205,7 @@ const updateCart = async (req, res) => {
 
     // - Make sure the userId in params and in JWT token match.
 
-    // Cart ID.
+    // Cart ID.  ?????????????---  Mandatory ---????????
     if (!isValid(cartId)) {
       return res
         .status(400)
@@ -302,6 +286,7 @@ const updateCart = async (req, res) => {
 
     // - Check if the productId exists and is not deleted before updating the cart.
     const findProductInCart = await cartModel.findOne({
+      userId: userIdParams,
       "items.productId": productId,
     });
     if (!findProductInCart) {
@@ -325,7 +310,7 @@ const updateCart = async (req, res) => {
     //**On success** - Return HTTP status 200. Also return the updated cart document.
 
     // <0> -> Remove Product.
-    if (removeProduct === 0) {
+    if (removeProduct == 0) {
       const removeProductInCart = await cartModel.findOneAndUpdate(
         {
           _id: cartId,
@@ -349,7 +334,7 @@ const updateCart = async (req, res) => {
     }
 
     // <1> -> Reduce Quantity of Product.
-    else if (removeProduct === 1) {
+    else if (removeProduct == 1) {
       // IF Product Quantity === 1 -> Remove Product.
       if (productInCart[0].quantity === 1) {
         // return res.status(400).send({
@@ -421,12 +406,12 @@ const updateCart = async (req, res) => {
 
 //-------------------------------------------------------------------------
 //              3. API - GET /users/:userId/cart
+//             (Returns cart summary of the user.)
 //-------------------------------------------------------------------------
 
 const getUsersCart = async (req, res) => {
-  // Returns cart summary of the user.
   try {
-    console.log("Get User's Cart");
+    console.log("Get Cart");
 
     const userIdParams = req.params.userId.trim();
 
@@ -436,8 +421,6 @@ const getUsersCart = async (req, res) => {
         message: `userId in Params: <${userIdParams}> NOT a Valid Mongoose Object ID.`,
       });
     }
-
-    // - Make sure the userId in params and in JWT token match.
 
     // - Make sure the user exist.
     const findUser = await userModel.findById(userIdParams); // isDeleted: false -> Check ????
@@ -479,13 +462,8 @@ const getUsersCart = async (req, res) => {
 //-------------------------------------------------------------------------
 
 const deleteUsersCart = async (req, res) => {
-  //- Deletes the cart for the user.
-  //- Make sure the userId in params and in JWT token match.
-  //- Make sure the user exist
-  //- Make sure that cart exist.
-  //- cart deleting means array of items is empty, totalItems is 0, totalPrice is 0.
   try {
-    console.log("Delete User's Cart");
+    console.log("Delete Cart");
 
     const userIdParams = req.params.userId.trim();
 
@@ -495,8 +473,6 @@ const deleteUsersCart = async (req, res) => {
         message: `userId in Params: <${userIdParams}> NOT a Valid Mongoose Object ID.`,
       });
     }
-
-    // - Make sure the userId in params and in JWT token match.
 
     // - Make sure the user exist.
     const findUser = await userModel.findById(userIdParams);
@@ -511,7 +487,6 @@ const deleteUsersCart = async (req, res) => {
     findCart = await cartModel.findOne({
       userId: userIdParams,
     });
-    // .populate("items.productId"); //Populate or Not???
     if (!findCart) {
       return res.status(404).send({
         status: false,
@@ -525,7 +500,6 @@ const deleteUsersCart = async (req, res) => {
       { items: [], totalItems: 0, totalPrice: 0 },
       { new: true }
     );
-    // { $set: { items: [], totalItems: 0, totalPrice: 0 } },
 
     //- **On success** - Return HTTP status 204. Return a suitable message.
     return res.status(204).send({

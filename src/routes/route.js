@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
+//Middleware Functions.
+const { authentication, authorization } = require("../middleware/auth");
+
 // User Functions.
 const {
   createUser,
@@ -25,8 +28,8 @@ const {
   deleteUsersCart,
 } = require("../controllers/cartController");
 
-//Middleware Functions.
-const { authentication, authorization } = require("../middleware/auth");
+//Order Functions.
+const { createOrder, updateOrder } = require("../controllers/orderController");
 
 // User APIs.
 router.post("/register", createUser);
@@ -61,6 +64,16 @@ router.delete(
   authorization,
   deleteUsersCart
 );
+
+// Product APIs.
+router.post(
+  "/users/:userId/orders",
+  authentication,
+  authorization,
+  createOrder
+);
+
+router.put("/users/:userId/orders", authentication, authorization, updateOrder);
 
 //----------------If api is invalid OR wrong URL-------------------------
 router.all("/**", function (req, res) {
