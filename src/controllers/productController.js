@@ -117,6 +117,36 @@ const createProducts = async (req, res) => {
   }
 };
 
+//////////                  GetProductbyId                   ///////////
+
+
+const getProductbyId = async function (req, res) {
+  try{
+      const productId = req.params.productId
+
+      if (!isValidObjectId(productId)) {
+          return res.status(400).send({ status: false, msg: "productId is invalid" });
+      }
+
+      const findProduct = await productModel.findById(productId)
+
+      if (!findProduct) {
+          return res.status(404).send({ status: false, message: 'product does not exists' })
+      }
+
+      if(findProduct.isDeleted == true){
+          return res.status(400).send({ status:false, msg: "product is deleted" });
+      }
+
+      return res.status(200).send({ status: true, message: 'Product found successfully', data: findProduct })
+  }
+  catch(error){
+      return res.status(500).json({ status: false, message: error.message });
+  }
+}
+
+
+
 //////////                  GetProductbyFilter                   ///////////
 
 const getProductByFilter = async function (req, res) {
@@ -406,4 +436,5 @@ module.exports = {
   getProductByFilter,
   updateProductById,
   deleteProductById,
+  getProductbyId
 };

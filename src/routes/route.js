@@ -18,6 +18,7 @@ const {
   updateProductById,
   deleteProductById,
   getProductByFilter,
+  getProductbyId
 } = require("../controllers/productController");
 
 //Cart Functions.
@@ -48,6 +49,7 @@ router.put(
 // Product APIs.
 router.post("/products", createProducts);
 router.get("/products", getProductByFilter);
+router.get("/products", getProductbyId);
 router.put("/products/:productId", updateProductById);
 router.delete("/products/:productId", deleteProductById);
 
