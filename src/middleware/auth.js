@@ -18,14 +18,14 @@ const authentication = async function (req, res, next) {
     jwt.verify(
       splitToken[1],
       "This-is-a-Secret-Key-for-Login(!@#$%^&*(</>)))",
-      (error, data) => {
+      (error, decodedToken) => {
         if (error) {
           return res.status(401).send({
             status: false,
             message: error.message,
           });
         }
-        req.userId = data.userId; // Set userId in Request for use in Authorization.
+        req.userId = decodedToken.userId; // Set userId in Request for use in Authorization.
         next();
       }
     );
