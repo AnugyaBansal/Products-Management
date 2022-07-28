@@ -9,7 +9,6 @@ const {
   login,
 } = require("../controllers/userController");
 
-<<<<<<< HEAD
 //Product Functions.
 const {
   createProducts,
@@ -19,7 +18,12 @@ const {
 } = require("../controllers/productController");
 
 //Cart Functions.
-const { addToCart, getUsersCart } = require("../controllers/cartController");
+const {
+  addToCart,
+  updateCart,
+  getUsersCart,
+  deleteUsersCart,
+} = require("../controllers/cartController");
 
 //Middleware Functions.
 const { authentication, authorization } = require("../middleware/auth");
@@ -28,21 +32,6 @@ const { authentication, authorization } = require("../middleware/auth");
 router.post("/register", createUser);
 
 router.post("/login", login);
-=======
-// FEATURE I - User 
-// User API
-router.post("/register",userController.createUser)
-router.post("/login",userController.login)
-router.get("/user/:userId/profile", auth.userAuth, userController.getUserById);
-router.put("/user/:userId/profile",auth.userAuth,userController.UpdateUser)
-
-// FEATURE II - Product 
-// Product API
-router.post("/products",productController.createProducts)
-router.get("/products", productController.getProductByFilter);
-router.put("/products/:productId", productController.updateProductById);
-router.delete("/products/:productId", productController.deleteProductById);
->>>>>>> e2760c1798b32bca92757feda7d3b37a192c9ef1
 
 router.get("/user/:userId/profile", authentication, getUserById);
 
@@ -62,7 +51,16 @@ router.delete("/products/:productId", deleteProductById);
 // Cart APIs.
 router.post("/users/:userId/cart", authentication, authorization, addToCart);
 
+router.put("/users/:userId/cart", authentication, authorization, updateCart);
+
 router.get("/users/:userId/cart", authentication, authorization, getUsersCart);
+
+router.delete(
+  "/users/:userId/cart",
+  authentication,
+  authorization,
+  deleteUsersCart
+);
 
 //----------------If api is invalid OR wrong URL-------------------------
 router.all("/**", function (req, res) {
