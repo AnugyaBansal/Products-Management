@@ -1,4 +1,3 @@
-// const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { isEmail } = require("validator");
@@ -15,7 +14,7 @@ const {
   isValidPincode,
   isValidStreet,
   isValidCity,
-} = require("../util/validator"); // isValidObjectId,
+} = require("../util/validator");
 
 //-------------------------------------------------------------------------
 //                1. API - POST /register
@@ -234,7 +233,7 @@ const createUser = async function (req, res) {
     let savedData = await userModel.create(data);
     return res.status(201).send({
       status: true,
-      message: "User created successfully",
+      message: "User Profile created successfully.",
       data: savedData,
     });
   } catch (error) {
@@ -320,7 +319,7 @@ const login = async function (req, res) {
     };
     return res.status(200).send({
       status: true,
-      message: "User login successfull.",
+      message: "User logged-in successfully.",
       data: userData,
     });
   } catch (error) {
@@ -331,12 +330,22 @@ const login = async function (req, res) {
 //-------------------------------------------------------------------------
 //                3. API - GET /user/:userId/profile
 //-------------------------------------------------------------------------
+
+// ONLY Authentication?????
+// - Allow an user to fetch details of their profile.
+//- Make sure that userId in url param and in token is same.
+
 const getUserById = async (req, res) => {
   try {
     const userIdParams = req.params.userId.trim();
+    if (!isValidObjectId(userIdParams)) {
+      return res.status(400).send({
+        status: false,
+        message: `<userId> in Params: <${userIdParams}> NOT a Valid Mongoose Object ID.`,
+      });
+    }
 
     const findUser = await userModel.findById(userIdParams);
-
     if (!findUser) {
       return res
         .status(404)
@@ -345,7 +354,7 @@ const getUserById = async (req, res) => {
 
     return res.status(200).send({
       status: true,
-      message: "User profile details.",
+      message: "Fetched User profile details.",
       data: findUser,
     });
   } catch (error) {
@@ -360,24 +369,32 @@ const updateUserById = async (req, res) => {
   try {
     const userIdParams = req.params.userId.trim();
     let body = req.body;
+    const file = req.files;
 
-    if (!isValidRequestBody(body)) {
+    if (!isValidRequestBody(body) && !file.length) {
       return res
         .status(400)
         .send({ status: false, message: "Request Body Empty." });
+    }
+    const userExist = await userModel.findById(userIdParams);
+    // Check if USER present in Database.
+    if (!userExist) {
+      return res.status(404).send({
+        status: false,
+        message: `User with ID <${userIdParams}> NOT Found.`,
+      });
     }
 
     const { fname, lname, email, phone, password, address } = body;
 
     // Validations.
-    //fname.
+    //<fname> Validation.
     if (fname) {
       if (!isValid(fname)) {
         return res
           .status(400)
           .send({ status: false, message: "Please provide <fname>." });
       }
-
       if (!isValidName(fname)) {
         return res.status(400).send({
           status: false,
@@ -385,14 +402,14 @@ const updateUserById = async (req, res) => {
         });
       }
     }
-    //  lname.
+
+    //  lname Validation.
     if (lname) {
       if (!isValid(lname)) {
         return res
           .status(400)
           .send({ status: false, message: "Please provide <lname>." });
       }
-
       if (!isValidName(lname)) {
         return res.status(400).send({
           status: false,
@@ -401,7 +418,7 @@ const updateUserById = async (req, res) => {
       }
     }
 
-    // email.
+    // email Validation.
     if (email) {
       if (!isValid(email)) {
         return res.status(400).send({
@@ -424,7 +441,7 @@ const updateUserById = async (req, res) => {
       }
     }
 
-    // phone.
+    // <phone> Validation.
     if (phone) {
       if (!isValidPhone(phone)) {
         return res.status(400).send({
@@ -442,7 +459,7 @@ const updateUserById = async (req, res) => {
       }
     }
 
-    // Password.
+    // Password Validation.
     if (password) {
       if (!isValidPassword(password)) {
         return res.status(400).send({
@@ -454,7 +471,7 @@ const updateUserById = async (req, res) => {
       body.password = await bcrypt.hash(body.password, salt);
     }
 
-    // Address.
+    // Address Validations.
     if (address) {
       if (!isValidRequestBody(address)) {
         return res.status(400).send({
@@ -466,7 +483,7 @@ const updateUserById = async (req, res) => {
       const { shipping, billing } = address;
       let userDocument = await userModel.findById(userIdParams);
 
-      // Shipping Address.
+      // Shipping Address Validation.
       if (shipping) {
         if (!isValidRequestBody(shipping)) {
           return res.status(400).send({
@@ -521,7 +538,7 @@ const updateUserById = async (req, res) => {
         }
       }
 
-      // Billing Address.
+      // Billing Address Validation.
       if (billing) {
         if (!isValidRequestBody(billing)) {
           return res.status(400).send({
@@ -578,8 +595,8 @@ const updateUserById = async (req, res) => {
       body.address = userDocument.address;
     }
 
-    //// profileImage Validations.
-    const file = req.files;
+    // profileImage upload (if present).
+    // const file = req.files;
     if (file && file.length > 0) {
       const profilePicURL = await uploadFile(file[0]);
       body.profileImage = profilePicURL;
@@ -589,13 +606,13 @@ const updateUserById = async (req, res) => {
     const updateUser = await userModel.findByIdAndUpdate(userIdParams, body, {
       new: true,
     });
-    // ERROR: If userId Not in Database.
-    if (!updateUser) {
-      return res.status(404).send({
-        status: false,
-        message: `User with ID <${userIdParams}> NOT Found.`,
-      });
-    }
+    // // ERROR: If userId Not in Database.
+    // if (!updateUser) {
+    //   return res.status(404).send({
+    //     status: false,
+    //     message: `User with ID <${userIdParams}> NOT Found.`,
+    //   });
+    // }
 
     return res.status(200).send({
       status: true,

@@ -13,9 +13,9 @@ const orderSchema = new mongoose.Schema(
       },
     ],
 
-    totalPrice: { type: Number, required: true, trim: true }, //Holds total price of all the items in the cart."
+    totalPrice: { type: Number, required: true, trim: true }, //Holds total price of all the items in the cart.
 
-    totalItems: { type: Number, required: true, trim: true }, //Holds total no. of items in the cart."
+    totalItems: { type: Number, required: true, trim: true }, //Holds total no. of items in the cart.
 
     totalQuantity: { type: Number, required: true, trim: true }, //Holds total no. of quantity in the cart."
 

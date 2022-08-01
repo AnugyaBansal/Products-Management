@@ -1,7 +1,10 @@
 const jwt = require("jsonwebtoken");
 const { isValidObjectId } = require("../util/validator");
 
-// Authentication.
+//-------------------------------------------------------------------------
+//                1. Authentication.
+//-------------------------------------------------------------------------
+
 const authentication = async function (req, res, next) {
   try {
     const token = req.header("Authorization");
@@ -34,7 +37,10 @@ const authentication = async function (req, res, next) {
   }
 };
 
-//Authorization.
+//-------------------------------------------------------------------------
+//                2. Authorization.
+//-------------------------------------------------------------------------
+
 const authorization = async function (req, res, next) {
   try {
     console.log("Authorization.");
@@ -52,7 +58,7 @@ const authorization = async function (req, res, next) {
       return res.status(403).send({
         status: false,
         message:
-          "Unauthorised Access: You can't fetch/update other User's Data (Profile, Cart etc.).",
+          "Unauthorised Access: You can't fetch/update other User's Data (Profile, Cart, Order).",
       });
     }
 

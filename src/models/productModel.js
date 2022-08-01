@@ -4,7 +4,7 @@ const productSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      lowercase: true,
+      lowercase: true, //Mandatory????
       required: true,
       unique: true,
       trim: true,

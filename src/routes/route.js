@@ -14,10 +14,11 @@ const {
 
 //Product Functions.
 const {
-  createProducts,
+  createProduct,
+  getProducts,
+  getProductById,
   updateProductById,
   deleteProductById,
-  getProductByFilter,
 } = require("../controllers/productController");
 
 //Cart Functions.
@@ -31,12 +32,12 @@ const {
 //Order Functions.
 const { createOrder, updateOrder } = require("../controllers/orderController");
 
-// User APIs.
+//---------------------------- User APIs. ---------------------------------
 router.post("/register", createUser);
 
 router.post("/login", login);
 
-router.get("/user/:userId/profile", authentication, getUserById);
+router.get("/user/:userId/profile", authentication, authorization, getUserById);
 
 router.put(
   "/user/:userId/profile",
@@ -45,13 +46,14 @@ router.put(
   updateUserById
 );
 
-// Product APIs.
-router.post("/products", createProducts);
-router.get("/products", getProductByFilter);
+//------------------------- Product APIs. ---------------------------------
+router.post("/products", createProduct);
+router.get("/products", getProducts);
+router.get("/products/:productId", getProductById);
 router.put("/products/:productId", updateProductById);
 router.delete("/products/:productId", deleteProductById);
 
-// Cart APIs.
+//------------------------- Cart APIs. -----------------------------------
 router.post("/users/:userId/cart", authentication, authorization, addToCart);
 
 router.put("/users/:userId/cart", authentication, authorization, updateCart);
@@ -65,7 +67,7 @@ router.delete(
   deleteUsersCart
 );
 
-// Product APIs.
+//------------------------- Order APIs. -----------------------------------
 router.post(
   "/users/:userId/orders",
   authentication,
@@ -75,11 +77,11 @@ router.post(
 
 router.put("/users/:userId/orders", authentication, authorization, updateOrder);
 
-//----------------If api is invalid OR wrong URL-------------------------
+//----------------If API is Invalid OR Wrong URL-------------------------
 router.all("/**", function (req, res) {
-  res
+  return res
     .status(404)
-    .send({ status: false, msg: "Requested API is not available" });
+    .send({ status: false, message: "Requested API is not available." });
 });
 
 module.exports = router;

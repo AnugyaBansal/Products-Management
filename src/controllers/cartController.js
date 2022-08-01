@@ -62,25 +62,23 @@ const addToCart = async (req, res) => {
       }
       //- Make sure that cart exist.
       //   findCart = await cartModel.findOne({ _id: cartId, userId: userIdParams });
-      findCart = await cartModel.findOne({ _id: cartId });
+      findCart = await cartModel.findOne({
+        _id: cartId,
+        userId: userIdParams,
+      }); // Added userId: userIdParams -> Test again.
       if (!findCart) {
         return res.status(404).send({
           status: false,
-          message: `CART with ID: <${cartId}> NOT Found in Database.`,
+          message: `CART with ID: <${cartId}> of USER: <${userIdParams}> NOT Found in Database.`,
         });
       }
     }
+    // }
     // IF cartId NOT in REquest-Body.   ~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!!!!!!!!
     else {
       findCart = await cartModel.findOne({ userId: userIdParams });
       if (findCart) {
         cartId = findCart._id;
-      }
-      if (!findCart) {
-        return res.status(404).send({
-          status: false,
-          message: `CART having userId: <${userIdParams}> NOT Found in Database.`,
-        });
       }
     }
 
@@ -127,11 +125,11 @@ const addToCart = async (req, res) => {
             $inc: {
               "items.$.quantity": 1,
               totalPrice: findProduct.price,
-              totalItems: 1,
             },
           },
           { new: true }
         );
+        // totalItems: 1, --> in $inc: !!
 
         return res.status(200).send({
           status: true,
@@ -257,13 +255,11 @@ const updateCart = async (req, res) => {
     }
 
     //- Make sure that cart exist.
-    findCart = await cartModel.findOne({
-      $or: [{ _id: cartId }, { userId: userIdParams }],
-    });
+    findCart = await cartModel.findOne({ _id: cartId, userId: userIdParams });
     if (!findCart) {
       return res.status(404).send({
         status: false,
-        message: `CART with ID: <${cartId}> NOT Found in Database.`,
+        message: `CART with ID: <${cartId}> of USER: <${userIdParams}> NOT Found in Database.`,
       });
     }
     if (findCart.items.length === 0) {
@@ -320,12 +316,13 @@ const updateCart = async (req, res) => {
         {
           $pull: { items: { productId: productId } },
           $inc: {
-            totalItems: -productInCart[0].quantity,
+            totalItems: -1,
             totalPrice: -findProduct.price * productInCart[0].quantity,
           },
         },
         { new: true }
       );
+      // totalItems: -productInCart[0].quantity,
 
       return res.status(200).send({
         status: true,
@@ -351,12 +348,13 @@ const updateCart = async (req, res) => {
           {
             $pull: { items: { productId: productId } },
             $inc: {
-              totalItems: -productInCart[0].quantity,
+              totalItems: -1,
               totalPrice: -findProduct.price * productInCart[0].quantity,
             },
           },
           { new: true }
         );
+        // totalItems: -productInCart[0].quantity,
 
         return res.status(200).send({
           status: true,
@@ -373,12 +371,12 @@ const updateCart = async (req, res) => {
         {
           $inc: {
             "items.$.quantity": -1,
-            totalItems: -1,
             totalPrice: -findProduct.price,
           },
         },
         { new: true }
       );
+      // totalItems: -1,
 
       return res.status(200).send({
         status: true,
@@ -387,7 +385,7 @@ const updateCart = async (req, res) => {
       });
     }
 
-    // NOT <1 & 0> -> Show ERROR.
+    // NOT <1 & 0> -> Show ERROR.  >>>>>>>>>> not required???
     else {
       return res.status(400).send({
         status: false,
