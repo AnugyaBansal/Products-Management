@@ -131,9 +131,9 @@ const addToCart = async (req, res) => {
         );
         // totalItems: 1, --> in $inc: !!
 
-        return res.status(200).send({
+        return res.status(201).send({
           status: true,
-          message: "Added product (Increased Quantity) in cart successfully.",
+          message: "Success",
           data: addProduct,
         });
       }
@@ -149,9 +149,9 @@ const addToCart = async (req, res) => {
       );
 
       // 201 ???????????!!!!!!!!!!!!!!!!!!!!!!!!!
-      return res.status(200).send({
+      return res.status(201).send({
         status: true,
-        message: "Added product (Created) in cart successfully.",
+        message: "Success",
         data: createProduct,
       });
     }
@@ -168,7 +168,7 @@ const addToCart = async (req, res) => {
     //- Get product(s) details in response body. !!!!!!!!!!!
     return res.status(201).send({
       status: true,
-      message: "User Cart Created Successfully.",
+      message: "Success",
       data: createCart,
     });
   } catch (error) {
@@ -326,7 +326,7 @@ const updateCart = async (req, res) => {
 
       return res.status(200).send({
         status: true,
-        messsage: "item removed successfully.",
+        messsage: "Success",
         data: removeProductInCart,
       });
     }
@@ -358,7 +358,7 @@ const updateCart = async (req, res) => {
 
         return res.status(200).send({
           status: true,
-          messsage: "item removed successfully.",
+          messsage: "Success",
           data: removeProductInCart,
         });
       }
@@ -380,7 +380,7 @@ const updateCart = async (req, res) => {
 
       return res.status(200).send({
         status: true,
-        messsage: "item removed (reduce quantity by 1) successfully.",
+        messsage: "Success",
         data: reduceProductInCart,
       });
     }

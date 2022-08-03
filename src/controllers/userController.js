@@ -14,6 +14,7 @@ const {
   isValidPincode,
   isValidStreet,
   isValidCity,
+  isValidObjectId
 } = require("../util/validator");
 
 //-------------------------------------------------------------------------

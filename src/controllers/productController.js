@@ -200,7 +200,7 @@ const createProduct = async (req, res) => {
     const createProduct = await productModel.create(data);
     return res.status(201).send({
       status: true,
-      message: "Product created successfully.",
+      message: "Success",
       data: createProduct,
     });
   } catch (error) {
@@ -353,7 +353,7 @@ const getProducts = async (req, res) => {
     }
     return res.status(200).send({
       status: true,
-      message: "Fetched Products Successfully.",
+      message: "Success",
       data: documents,
     });
   } catch (error) {
@@ -407,7 +407,7 @@ const getProductById = async (req, res) => {
     //- **On success** - Return HTTP status 200. Also return the product documents.
     return res.status(200).send({
       status: true,
-      message: "Fetched Product by ID.",
+      message: "Success",
       data: findProduct,
     });
   } catch (error) {
