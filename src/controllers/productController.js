@@ -197,10 +197,11 @@ const createProduct = async (req, res) => {
     //- **Response format**
     //- **On success** - Return HTTP status 201. Also return the product document.
     //- **On error** - Return a suitable error message with a valid HTTP status code.
+    // message: "Product created successfully.",
     const createProduct = await productModel.create(data);
     return res.status(201).send({
       status: true,
-      message: "Product created successfully.",
+      message: "Success",
       data: createProduct,
     });
   } catch (error) {
@@ -323,10 +324,11 @@ const getProducts = async (req, res) => {
             .send({ status: false, message: "No products found." });
         return res.status(200).send({
           status: true,
-          message: "Fetched Products in Ascending Order of Price.",
+          message: "Success",
           data: documents,
         });
       }
+      // message: "Fetched Products in Ascending Order of Price.",
       if (priceSort == -1) {
         const documents = await productModel
           .find(filterQuery)
@@ -337,11 +339,12 @@ const getProducts = async (req, res) => {
             .send({ status: false, message: "No products found." });
         return res.status(200).send({
           status: true,
-          message: "Fetched Products in Descending Order of Price.",
+          message: "Success",
           data: documents,
         });
       }
     }
+    // message: "Fetched Products in Descending Order of Price.",
     //- **Response format**
     //- **On success** - Return HTTP status 200. Also return the product documents.
     const documents = await productModel.find(filterQuery);
@@ -351,9 +354,10 @@ const getProducts = async (req, res) => {
         .status(404) // Required?????
         .send({ status: false, message: "No products found." });
     }
+    // message: "Fetched Products Successfully.",
     return res.status(200).send({
       status: true,
-      message: "Fetched Products Successfully.",
+      message: "Success",
       data: documents,
     });
   } catch (error) {
@@ -405,9 +409,10 @@ const getProductById = async (req, res) => {
     }
 
     //- **On success** - Return HTTP status 200. Also return the product documents.
+    // message: "Fetched Product by ID.",
     return res.status(200).send({
       status: true,
-      message: "Fetched Product by ID.",
+      message: "Success",
       data: findProduct,
     });
   } catch (error) {
@@ -622,9 +627,10 @@ const updateProductById = async (req, res) => {
     //- **Response format**
     //- **On success** - Return HTTP status 200. Also return the updated product document.
     //- **On error** - Return a suitable error message with a valid HTTP status code.
+    // message: "Product Updated.",
     return res.status(200).send({
       status: true,
-      message: "Product Updated.",
+      message: "Success",
       data: updateProduct,
     });
   } catch (error) {
@@ -662,6 +668,7 @@ const deleteProductById = async (req, res) => {
     }
 
     //- **On success** - Return HTTP status 200.
+    // message: "Deleted Product by ID.",
     return res.status(200).send({
       status: true,
       message: "Deleted Product by ID.",

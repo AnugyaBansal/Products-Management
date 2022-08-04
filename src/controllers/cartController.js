@@ -44,10 +44,10 @@ const addToCart = async (req, res) => {
     //- Get productId in request body.
     let { cartId, productId } = req.body;
 
-    // Cart ID. -> NOT MAndatory????????????
+    // Cart ID -> NOT Mandatory.
     let findCart;
 
-    // if (cartId) {
+    // If <cartId> present in request-body. 
     if (typeof cartId !== "undefined") {
       if (!isValid(cartId)) {
         return res
@@ -61,7 +61,6 @@ const addToCart = async (req, res) => {
         });
       }
       //- Make sure that cart exist.
-      //   findCart = await cartModel.findOne({ _id: cartId, userId: userIdParams });
       findCart = await cartModel.findOne({
         _id: cartId,
         userId: userIdParams,
@@ -73,8 +72,8 @@ const addToCart = async (req, res) => {
         });
       }
     }
-    // }
-    // IF cartId NOT in REquest-Body.   ~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!!!!!!!!
+    // IF <cartId> NOT in Request-Body, then find <cartId> by <userId> in Params.   
+    // IF CART of USER doesn't exist in DB, then we'll create cart (BELOW).   
     else {
       findCart = await cartModel.findOne({ userId: userIdParams });
       if (findCart) {
@@ -82,7 +81,7 @@ const addToCart = async (req, res) => {
       }
     }
 
-    // Product ID.
+    // Product ID Validation.
     if (!isValid(productId)) {
       return res
         .status(400)
@@ -95,7 +94,7 @@ const addToCart = async (req, res) => {
         message: `productId: <${productId}> NOT a Valid Mongoose Object ID.`,
       });
     }
-    //- Make sure the product(s) are valid and not deleted.!!!!!!!!!!!!!!
+    //- Make sure the product(s) are valid and not deleted.
     const findProduct = await productModel.findOne({
       _id: productId,
       isDeleted: false,
@@ -131,9 +130,10 @@ const addToCart = async (req, res) => {
         );
         // totalItems: 1, --> in $inc: !!
 
-        return res.status(200).send({
+        // message: "Added product (Increased Quantity) in cart successfully.",
+        return res.status(201).send({
           status: true,
-          message: "Added product (Increased Quantity) in cart successfully.",
+          message: "Success",
           data: addProduct,
         });
       }
@@ -149,14 +149,15 @@ const addToCart = async (req, res) => {
       );
 
       // 201 ???????????!!!!!!!!!!!!!!!!!!!!!!!!!
-      return res.status(200).send({
+      // message: "Added product (Created) in cart successfully.",
+      return res.status(201).send({
         status: true,
-        message: "Added product (Created) in cart successfully.",
+        message: "Success",
         data: createProduct,
       });
     }
 
-    //- Create a cart for the user if it does not exist. Else add product<(s)> in cart.
+    //- Create a cart for the user if it does not exist.
     const cart = {
       userId: userIdParams,
       items: [{ productId: productId, quantity: 1 }],
@@ -166,9 +167,10 @@ const addToCart = async (req, res) => {
     const createCart = await cartModel.create(cart);
 
     //- Get product(s) details in response body. !!!!!!!!!!!
+    // message: "User Cart Created Successfully.",
     return res.status(201).send({
       status: true,
-      message: "User Cart Created Successfully.",
+      message: "Success",
       data: createCart,
     });
   } catch (error) {
@@ -187,24 +189,24 @@ const updateCart = async (req, res) => {
   // - Get product(s) details in response body.
   try {
     console.log("Update Cart");
-
+    
     const userIdParams = req.params.userId.trim();
-
+    
     if (!isValidObjectId(userIdParams)) {
       return res.status(400).send({
         status: false,
         message: `userId in Params: <${userIdParams}> NOT a Valid Mongoose Object ID.`,
       });
     }
-
+    
     //- Get cart id in request body.
     //- Get productId in request body.
     // - Get key 'removeProduct' in request body.
     let { cartId, productId, removeProduct } = req.body;
 
-    // - Make sure the userId in params and in JWT token match.
+    // - Make sure the userId in params and in JWT token match (<middleware>).
 
-    // Cart ID.  ?????????????---  Mandatory ---????????
+    // Cart ID. -> Mandatory in Update(here).
     if (!isValid(cartId)) {
       return res
         .status(400)
@@ -323,10 +325,11 @@ const updateCart = async (req, res) => {
         { new: true }
       );
       // totalItems: -productInCart[0].quantity,
-
+      
+      // message: "item removed successfully.",
       return res.status(200).send({
         status: true,
-        messsage: "item removed successfully.",
+        message: "Success",
         data: removeProductInCart,
       });
     }
@@ -355,10 +358,11 @@ const updateCart = async (req, res) => {
           { new: true }
         );
         // totalItems: -productInCart[0].quantity,
-
+        
+        // message: "item removed successfully.",
         return res.status(200).send({
           status: true,
-          messsage: "item removed successfully.",
+          message: "Success",
           data: removeProductInCart,
         });
       }
@@ -378,9 +382,10 @@ const updateCart = async (req, res) => {
       );
       // totalItems: -1,
 
+      // message: "item removed (reduce quantity by 1) successfully.",
       return res.status(200).send({
         status: true,
-        messsage: "item removed (reduce quantity by 1) successfully.",
+        message: "Success",
         data: reduceProductInCart,
       });
     }
@@ -389,7 +394,7 @@ const updateCart = async (req, res) => {
     else {
       return res.status(400).send({
         status: false,
-        messsage: "ELSE: took neither <0> nor <1>.",
+        message: "ELSE: took neither <0> nor <1>.",
       });
     }
 
@@ -436,7 +441,7 @@ const getUsersCart = async (req, res) => {
       .findOne({
         userId: userIdParams,
       })
-      .populate("items.productId"); //Populate or Not???
+      .populate("items.productId"); //Populate.
 
     if (!findCart) {
       return res.status(404).send({
@@ -444,11 +449,12 @@ const getUsersCart = async (req, res) => {
         message: `CART with userID: <${userIdParams}> NOT Found in Database.`,
       });
     }
-
+    
+    // message: "User's Cart details.",
     // - Get product(s) details in response body.   !!!!!!!!!!
     return res.status(200).send({
       status: true,
-      message: "User's Cart details.",
+      message: "Success",
       data: findCart,
     });
   } catch (error) {
@@ -501,9 +507,10 @@ const deleteUsersCart = async (req, res) => {
     );
 
     //- **On success** - Return HTTP status 204. Return a suitable message.
+    // message: "Cart Deleted.",
     return res.status(204).send({
       status: true,
-      message: "Cart Deleted.",
+      message: "Success",
       data: deleteCart, // Send Data ?????????
     });
   } catch (error) {

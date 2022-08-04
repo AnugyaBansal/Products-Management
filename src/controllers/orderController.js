@@ -94,9 +94,10 @@ const createOrder = async (req, res) => {
     //- **On success** - Return HTTP status 200. Also return the order document.
     const createOrder = await orderModel.create(orderData);
 
+    // message: "Order Created Successfully.",
     res.status(201).send({
       status: true,
-      message: "Order Created Successfully.",
+      message: "Success",
       data: createOrder,
     });
 
@@ -136,7 +137,8 @@ const updateOrder = async (req, res) => {
     }
 
     //- Get order id in request body.
-    const { orderId } = req.body;
+    // const { orderId } = req.body;
+    const { orderId, status } = req.body;
 
     // if (cancellable) {}
     if (!isValid(orderId)) {
@@ -148,6 +150,18 @@ const updateOrder = async (req, res) => {
       return res.status(400).send({
         status: false,
         message: `orderId: <${orderId}> NOT a Valid Mongoose Object ID.`,
+      });
+    }
+
+    if (!isValid(status)) {
+      return res
+        .status(400)
+        .send({ status: false, message: "<status> required." });
+    }
+    if (status != "cancelled" && status != "completed") {
+      return res.status(400).send({
+        status: false,
+        message: "<status> can either be <cancelled> or <completed> only.",
       });
     }
 
@@ -185,19 +199,38 @@ const updateOrder = async (req, res) => {
         message: `Order already cancelled (as <status>: 'cancelled').`,
       });
     }
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if (findOrder.status == "completed") {
+      return res.status(400).send({
+        status: false,
+        message: `Order already completed (as <status>: 'completed').`,
+      });
+    }
 
     // const updatedOrder = await orderModel.findOneAndUpdate({ _id: orderId }, { status: status }, { new: true })
+    let updatedOrder;
 
-    const updatedOrder = await orderModel.findByIdAndUpdate(
-      orderId,
-      { status: "cancelled" },
-      { new: true }
-    );
+    if (status == "cancelled") {
+      updatedOrder = await orderModel.findByIdAndUpdate(
+        orderId,
+        { status: "cancelled" },
+        { new: true }
+      );
+    }
+
+    if (status == "completed") {
+      updatedOrder = await orderModel.findByIdAndUpdate(
+        orderId,
+        { status: "completed" },
+        { new: true }
+      );
+    }
 
     //- **On success** - Return HTTP status 200. Also return the updated order document.
+    // message: "Order Updated Successfully.",
     return res.status(200).send({
       status: true,
-      message: "Order Updated Successfully.",
+      message: "Success",
       data: updatedOrder,
     });
   } catch (error) {

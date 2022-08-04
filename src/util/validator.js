@@ -25,7 +25,7 @@ const isValidPhone = function (phone) {
 };
 
 const isValidPassword = function (password) {
-  return password.length >= 1 && password.length <= 15;
+  return password.length >= 8 && password.length <= 15;
 };
 
 const isValidStreet = function (street) {
