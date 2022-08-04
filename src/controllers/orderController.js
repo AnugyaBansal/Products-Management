@@ -188,10 +188,12 @@ const updateOrder = async (req, res) => {
 
     //- Make sure that only a cancellable order could be canceled. Else send an appropriate error message and response.
     if (findOrder.cancellable === "false" || findOrder.cancellable === false) {
-      return res.status(400).send({
-        status: false,
-        message: `Can't cancel Order as <cancellable>: 'false'.`,
-      });
+      if (status == "cancelled") {
+        return res.status(400).send({
+          status: false,
+          message: `Can't cancel Order as <cancellable>: 'false'.`,
+        });
+      }
     }
     if (findOrder.status == "cancelled") {
       return res.status(400).send({
