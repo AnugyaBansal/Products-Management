@@ -148,19 +148,20 @@ const createProduct = async (req, res) => {
         });
       }
 
-    // const currencyFormat = "INR";     // USD also.????
-    if (currencyFormat && currencyFormat != "INR" && currencyFormat != "USD") {
+    // const currencyFormat = "₹";   // $ also.????
+    if (currencyFormat && currencyFormat != "₹" && currencyFormat != "$") {
       return res.status(400).send({
         status: false,
-        message: "<currencyFormat> must be either <INR> OR <USD>.",
+        message: "<currencyFormat> must be either <₹> OR <$>.",
       });
     }
 
-    // const currencyFormat = "₹";   // $ also.????
-    if (currencyId && currencyId != "$" && currencyId != "₹") {
+    // const currencyId = "INR";     // USD also.????
+    // if (currencyId && currencyId != "$" && currencyId != "₹") {
+    if (currencyId && currencyId != "INR" && currencyId != "USD") {
       return res.status(400).send({
         status: false,
-        message: "<currencyId> must be either <₹> OR <$>.",
+        message: "<currencyId> must be either <INR> OR <USD>.",
       });
     }
 
@@ -572,18 +573,18 @@ const updateProductById = async (req, res) => {
       }
 
     // const currencyFormat = "INR";     // USD also.????
-    if (currencyFormat && currencyFormat != "INR" && currencyFormat != "USD") {
+    if (currencyFormat && currencyFormat != "₹" && currencyFormat != "$") {
       return res.status(400).send({
         status: false,
-        message: "<currencyFormat> must be either <INR> OR <USD>.",
+        message: "<currencyFormat> must be either <₹> OR <$>.",
       });
     }
 
     // const currencyFormat = "₹";   // $ also.????
-    if (currencyId && currencyId != "$" && currencyId != "₹") {
+    if (currencyId && currencyId != "USD" && currencyId != "INR") {
       return res.status(400).send({
         status: false,
-        message: "<currencyId> must be either <₹> OR <$>.",
+        message: "<currencyId> must be either <INR> OR <USD>.",
       });
     }
 
