@@ -111,7 +111,7 @@ const createUser = async function (req, res) {
       });
     }
 
-    //<password> Validayions.
+    //<password> Validations.
     if (!isValid(password)) {
       return res.status(400).send({
         status: false,

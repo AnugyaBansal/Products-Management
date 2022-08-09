@@ -60,12 +60,7 @@ router.put("/users/:userId/cart", authentication, authorization, updateCart);
 
 router.get("/users/:userId/cart", authentication, authorization, getUsersCart);
 
-router.delete(
-  "/users/:userId/cart",
-  authentication,
-  authorization,
-  deleteUsersCart
-);
+router.delete("/users/:userId/cart", authentication, authorization, deleteUsersCart);
 
 //------------------------- Order APIs. -----------------------------------
 router.post(

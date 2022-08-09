@@ -18,7 +18,7 @@ const {
 
 const createProduct = async (req, res) => {
   try {
-    console.log("\n Create Product API.");
+    // console.log("\n Create Product API.");
 
     let data = req.body;
 
