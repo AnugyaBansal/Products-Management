@@ -285,7 +285,7 @@ exports.getCart = async (req, res) => {
 
     //checking if the cart exist with this userId or not
     const findCart = await cartModel
-      .findOne({ userId,isDeleted:false })
+      .findOne({ userId, isDeleted: false })
       .populate("items.productId");
 
     if (!findCart)
@@ -301,7 +301,7 @@ exports.getCart = async (req, res) => {
 };
 
 // *******************Delete Api*********************
-exports.deleteCart = async function(req, res) {
+exports.deleteCart = async function (req, res) {
   try {
     const { userId } = req.params;
     if (req.params.userId) {
@@ -311,12 +311,12 @@ exports.deleteCart = async function(req, res) {
           .send({ status: false, msg: "Please provide valid userId" });
     }
 
-    const checkCart = await cartModel.findOne({ userId,isDeleted:false });
+    const checkCart = await cartModel.findOne({ userId, isDeleted: false });
     console.log(checkCart)
     if (!checkCart['items']?.length)
       return res.status(404).send({ status: false, msg: "No Cart Found" });
     const deleteData = await cartModel.findOneAndUpdate(
-      { _id: checkCart._id ,isDeleted:false },
+      { _id: checkCart._id, isDeleted: false },
       { items: [], totalPrice: 0, totalItems: 0 },
       { new: true }
     );

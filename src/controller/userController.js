@@ -276,7 +276,7 @@ exports.userLogin = async function(req, res) {
     const token = jwt.sign(
       {
         userId: UsersData._id.toString(),
-        expiresIn: '24h'
+        expiresIn: '1m'
       },
       'functionup-radon'
     );

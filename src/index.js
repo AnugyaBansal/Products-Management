@@ -13,7 +13,8 @@ app.use(multer().any())
 
 mongoose
   .connect(
-    'mongodb+srv://rohit_sonawane:SuperSu@cluster0.e9hjfiy.mongodb.net/group38Database'
+    // 'mongodb+srv://rohit_sonawane:SuperSu@cluster0.e9hjfiy.mongodb.net/group38Database'
+    "mongodb+srv://anugyabansal37:5b3S7fjYb9OqsE7b@cluster0.cupz4pc.mongodb.net/group-37-Database"
   )
   .then(() => console.log('MongoDb is connected'))
   .catch(err => console.log(err));
