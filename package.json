@@ -7,10 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon ./src/index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Vikas-Mehra/Project-5-Products-Management.git"
-  },
+  
   "keywords": [
     "RADON-Batch",
     "Project-5",
